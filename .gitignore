@@ -1,0 +1,5 @@
+./algorithms/
+.vscode
+*.exe
+*.sh
+*.in
