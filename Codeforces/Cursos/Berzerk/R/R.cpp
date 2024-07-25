@@ -40,7 +40,7 @@ struct LineContainer : multiset<Line, less<>> {
       isect(x, erase(y));
   }
   ll query(ll x) {
-    if (empty()) return 1;
+    if (empty()) return 0;
     auto l = *lower_bound(x);
     return l.k * x + l.m;
   }
@@ -58,7 +58,7 @@ signed main() {
 
   LineContainer lc;
   FOR (i, 0, n - 1) lc.add(-b[i], lc.query(a[i]));
-  cout << -lc.query(a.back()) + 1 << ENDL;
+  cout << -lc.query(a.back()) << ENDL;
 
   return 0;
 }

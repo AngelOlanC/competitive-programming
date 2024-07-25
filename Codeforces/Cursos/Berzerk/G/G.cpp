@@ -22,7 +22,7 @@ typedef vector<ld> vd;
 void fft(vector<C> &a) {
   int n = SZ(a), L = 31 - __builtin_clz(n);
   static vector<complex<ld>> R(2, 1);
-  static vector<C> rt(2, 1);  // (^ 10% faster if double)
+  static vector<C> rt(2, 1);
   for (static int k = 2; k < n; k *= 2) {
     R.resize(n);
     rt.resize(n);
@@ -37,19 +37,15 @@ void fft(vector<C> &a) {
   if (i < rev[i]) swap(a[i], a[rev[i]]);
   for (int k = 1; k < n; k *= 2)
     for (int i = 0; i < n; i += 2 * k) FOR(j, 0, k) {
-        // C z = rt[j+k] * a[i+j+k]; // (25% faster if hand-rolled)  /// include-line
-        auto x = (ld *)&rt[j + k], y = (ld *)&a[i + j + k];         /// exclude-line
-        C z(x[0] * y[0] - x[1] * y[1], x[0] * y[1] + x[1] * y[0]);  /// exclude-line
+        C z = rt[j+k] * a[i+j+k];
         a[i + j + k] = a[i + j] - z;
         a[i + j] += z;
       }
 }
 
-typedef vector<ll> vl;
-
-vl conv(const vl &a, const vl &b) {
+vi conv(const vi &a, const vi &b) {
   if (a.empty() || b.empty()) return {};
-  vl res(SZ(a) + SZ(b) - 1);
+  vi res(SZ(a) + SZ(b) - 1);
   int L = 32 - __builtin_clz(SZ(res)), n = 1 << L;
   vector<C> in(n), out(n);
   copy(ALL(a), begin(in));
@@ -73,26 +69,46 @@ signed main() {
 
   reverse(ALL(t));
 
-  
-
-  vector<vl> cnv(26);
-  FOR (i, 0, 26) {
-    vl a(SZ(s));
-    FOR (j, 0, SZ(s)) a[j] = s[j] - 'a' == i;
-    vl b(SZ(t));
-    FOR (j, 0, SZ(t)) b[j] = t[j] - 'a' == i;
-    cnv[i] = conv(a, b);
-  }
-
-  vector<vi> cnt(2, vi(26));
-  FOR (i, 0, SZ(t)) {
-    cnt[0][i] += 
+  vector<vector<vi>> c(6, vector<vi>(6));
+  FOR (i, 0, 6) {
+    FOR (j, 0, 6) {
+      vi a(SZ(s)), b(SZ(t));
+      FOR (k, 0, SZ(s)) {
+        a[k] = s[k] - 'a' == i;
+      }
+      FOR (k, 0, SZ(t)) {
+        b[k] = t[k] - 'a' == j;
+      }
+      c[i][j] = conv(a, b);
+    }
   }
 
   FOR (i, SZ(t) - 1, SZ(s)) {
+    vector<vi> nice(6, vi(6));
     int ans = 0;
-    FOR (j, 0, 26) matches += cnv[j][i];
-    cout << SZ(t) - matches << " \n"[i == SZ(s) - 1];
+    FOR (j, 0, 6) FOR (k, 0, 6) if (c[j][k][i]) nice[j][k] = 1;
+    vi active(6);
+    FOR (j, 0, 6) FOR (k, 0, 6) if (nice[j][k] || nice[k][j]) {
+      active[j] = 1;
+      ans++;
+      break;
+    }
+    vi vis(6);
+    queue<int> q;
+    FOR (j, 0, 6) if (active[j] && !vis[j]) {
+      ans--;
+      q.push(j);
+      vis[j] = 1;
+      while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        FOR (v, 0, 6) if ((nice[u][v] || nice[v][u]) && !vis[v]) {
+          q.push(v);
+          vis[v] = 1;
+        }
+      }
+    }
+    cout << ans << " \n"[i == SZ(s) - 1];
   }
 
   return 0;
