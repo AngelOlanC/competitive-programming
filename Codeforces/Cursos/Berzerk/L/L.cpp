@@ -14,14 +14,23 @@ using vi = vector<int>;
 
 constexpr int MOD = 1e9 + 7;
 
+int add(int a, int b) {
+  return a + b >= MOD ? a + b - MOD : a + b;
+}
+
+int sub(int a, int b) {
+  return a < b ? a - b + MOD : a - b;
+}
+
+int mul(int a, int b) {
+  return 1ll * a * b % MOD;
+}
+
 int be(int a, int b, int m) {
   int res = 1;
-  a %= m;
   while (b) {
-    if (b & 1) {
-      res = 1ll * res * a % m;
-    }
-    a = 1ll * a * a % m;
+    if (b & 1) res = mul(res, a);
+    a = mul(a, a);
     b >>= 1;
   }
   return res;
@@ -29,7 +38,7 @@ int be(int a, int b, int m) {
 
 int modInverse(int b) { return be(b, MOD - 2, MOD); }
 
-constexpr int maxn = 1e5 + 5;
+constexpr int maxn = 200005;
 
 int n;
 int sz[maxn];
@@ -47,23 +56,11 @@ signed main() {
   cin.tie(0)->sync_with_stdio(0);
 
   cin >> n;
-  vector<vi> d(n, vi(n, 1e6));
   FOR (i, 1, n) {
     int u, v;
     cin >> u >> v;
     g[--u].pb(--v), g[v].pb(u);
-    d[u][v] = d[v][u] = 1;
   }
-
-  FOR (i, 0, n) d[i][i] = 0;
-  FOR (k, 0, n) FOR (i, 0, n) FOR (j, 0, n) d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
-
-  int s = 0;
-  FOR (i, 0, n) FOR (j, 0, n) {
-    cout << d[i][j] << " \n"[j == n - 1];
-    s += d[i][j];
-  }
-  cout << s << ENDL;
 
   dfs(0, -1);
 
@@ -72,13 +69,11 @@ signed main() {
     for (auto &j : g[i]) if (i < j) {
       int u = i, v = j;
       if (sz[u] < sz[v]) swap(u, v);
-      ans += 1ll * (sz[0] - sz[u] + 1) * sz[v] % MOD;
-      ans %= MOD;
+      ans = add(ans, mul(sz[0] - sz[v], sz[v]));
     }
   }
-  cout << ans << ENDL;  
-  ans = 1ll * ans * modInverse(1ll * n * n % MOD) % MOD;
-  cout << ans << ' ' << 20ll * modInverse(5) % MOD << ENDL;
+  ans = mul(ans, modInverse(mul(mul(n, n + 1), modInverse(2))));
+  cout << ans << ENDL;
 
   return 0;
 }
