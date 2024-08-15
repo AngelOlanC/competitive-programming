@@ -29,7 +29,7 @@ signed main() {
   }
 
   vector<int> inverse(n + m + 1);
-  inverse[1] = 1;
+  inverse[0] = inverse[1] = 1;
   for (int i = 2; i <= n + m; ++i) {
     inverse[i] = MOD - (long long)(MOD / i) * inverse[MOD % i] % MOD;
   }
@@ -49,7 +49,6 @@ signed main() {
   int cheeseToEnd = combinations(n - a + m - b, n - a);
   int answerSingleCase = (long long)startToCheese * cheeseToEnd % MOD;
   int answer = binaryExponenciation(answerSingleCase, k);
-
   cout << answer << '\n';
 
   return 0;
