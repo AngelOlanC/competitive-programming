@@ -1,13 +1,17 @@
 g++ -o generator generator.cpp
-for i in $(seq 1 25)
+for i in $(seq 1 10)
 do
-  ./generator 2 > ../OmegaUpPackage/cases/2_small_brute.$i.in
+  ./generator 1 > ../OmegaUpPackage/cases/$i.in
 done
-for i in $(seq 1 25)
+for i in $(seq 11 35)
 do
-  ./generator 3 > ../OmegaUpPackage/cases/3_big_nm_small_k.$i.in
+  ./generator 2 > ../OmegaUpPackage/cases/$i.in
 done
-for i in $(seq 1 40)
+for i in $(seq 36 60)
 do
-  ./generator 4 > ../OmegaUpPackage/cases/4_no_restrictions.$i.in
+  ./generator 3 > ../OmegaUpPackage/cases/$i.in
+done
+for i in $(seq 61 100)
+do
+  ./generator 4 > ../OmegaUpPackage/cases/$i.in
 done

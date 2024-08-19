@@ -15,39 +15,32 @@ using vi = vector<int>;
 void solve(int test_case) {
   int n;
   cin >> n;
-  vector<pi> a(n);
-  for (auto &[c, x] : a) cin >> c >> x;
-  vector<stack<pair<ll, ll>>> stx(n + 1);
-  stack<pair<ll, pair<ll, int>>> stg;
   ll ans = 0;
+  stack<pair<ll, int>> st;
+  // cout << "case\n";
   FOR (i, 0, n) {
-    auto [c, x] = a[i];
-    while (!stx[x].empty() && stx[x].top().first < c) stx[x].pop();
-    if (stx[x].empty()) {
-      ans = max(ans, (ll)c);
-      stx[x].push({c, 0});
-      while (!stg.empty() && stg.top().first < c) stg.pop();
-      stg.push({c, {0, x}});
-      continue;
+    int x, y;
+    cin >> x >> y;
+    st.push({x,y});
+    while (1) {
+      auto [a, b] = st.top(); st.pop();
+      ll mx = 0;
+      while (!st.empty() && st.top().second != b && st.top().first <= a) {
+        mx = st.top().first;
+        st.pop();
+      } 
+      if (!st.empty() && st.top().second == b) {
+        auto [aa, bb] = st.top(); st.pop();
+        // cout << ENDL <<  i << ' ' << aa << ' ' << bb << ENDL;
+        ans = max(ans, aa + a - mx);
+        st.push({aa + a - mx, bb});
+      } else {
+        ans = max(ans, (ll)a);
+        st.push({a, b});
+        break;
+      }
     }
-    if (stg.top().second.first != x && stg.top().first >= stx[x].top().first) {
-      ans = max(ans, (ll)c);
-      stx[x].push({c, 0});
-      while (!stg.empty() && stg.top().first < c) stg.pop();
-      stg.push({c, {0, x}});
-      continue;
-    }
-    ll gre = 0;
-    while (!stg.empty() && stg.top().second.first != x) {
-      gre = max(gre, (ll)stg.top().second.second);
-      stg.pop();
-    }
-    auto [ct, tt] = stx[x].top();
-    stg.pop(); stx[x].pop();
-    stg.push({ct + c - gre, {c - gre, x}});
-    stx[x].push({ct + c - gre, c - gre});
-    ans = max(ans, ct + c - gre);
-    cout << ans << "  \n"[i == n - 1];
+    cout << ans << " \n"[i == n - 1];
   }
 }
 

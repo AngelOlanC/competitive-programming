@@ -13,8 +13,7 @@ int main(int argc, char* argv[]) {
   int n, m;
   long long k;
   if (subproblem == 1) {
-    n = m = 3;
-    k = 1;
+    n = random(1, 3), m = random(1, 3), k = 1;
   } else if (subproblem == 2) {
     do {
       n = random(1, 4), m = random(1, 4);
