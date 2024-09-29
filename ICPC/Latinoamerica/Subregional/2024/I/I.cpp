@@ -12,54 +12,49 @@ using vi = vector<int>;
 #define ROF(i, a, b) for (int i = (int)a - 1; i >= (int)b; --i)
 #define ENDL '\n'
 
-constexpr int maxvalue = 1e6 + 5, MOD = 1e9 + 7;
-
-int be(int a, int b) {
-  int res = 1;
-  while (b) {
-    if (b & 1) res = (ll)res * a % MOD;
-    a = (ll)a * a % MOD;
-    b >>= 1;
-  }
-  return res;
-}
+constexpr int maxv = 1e6 + 5, MOD = 1e9 + 7;
 
 signed main() {
   cin.tie(0)->sync_with_stdio(0);
 
-  vector<vi> pd(maxvalue);
-  pd[1].pb(1);
+  vector<vi> pd(maxv);
   {
-    FOR (i, 2, maxvalue) if (pd[i].empty()) {
-      pd[i].pb(i);
-      for (int j = 2 * i; j < maxvalue; j += i) pd[j].pb(i);
+    vi is_prime(maxv, 1);
+    FOR (i, 2, maxv) if (is_prime[i]) for (int j = i; j < maxv; j += i) {
+      is_prime[j] = 0;
+      pd[j].pb(i);
     }
-  }  
+  }
 
   int n;
   cin >> n;
-  vi a(n), mul(maxvalue);
-  FOR (i, 0, n) {
-    cin >> a[i];
-    mul[a[i]]++;
+
+  vi ncp(maxv), a(n);
+  for (auto &x : a) {
+    cin >> x;
+    FOR (msk, 1, (1 << SZ(pd[x]))) {
+      int mul = 1;
+      FOR (i, 0, SZ(pd[x])) if ((msk >> i) & 1) mul *= pd[x][i];
+      ++ncp[mul];
+    }
   }
 
-  FOR (i, 1, maxvalue) for (int j = 2 * i; j < maxvalue; j += i) {
-    mul[i] += mul[j];
-  }
+  vi pot2(n + 1);
+  pot2[0] = 1;
+  FOR (i, 1, n + 1) pot2[i] = pot2[i - 1] * 2 % MOD;
 
   int q;
   cin >> q;
   while (q--) {
     int x;
     cin >> x;
-    int pot = 0;
-    FOR (msk, 0, 1 << 8) {
-      int l = 
-      FOR (i, 0, SZ(pd[x])) {
-
-      }
+    int cp = 0;
+    FOR (msk, 1, (1 << SZ(pd[x]))) {
+      int mul = 1;
+      FOR (i, 0, SZ(pd[x])) if ((msk >> i) & 1) mul *= pd[x][i];
+      cp += (__builtin_popcount(msk) % 2 ? ncp[mul] : -ncp[mul]);
     }
+    cout << pot2[n - cp] << ENDL;
   }
 
   return 0;
