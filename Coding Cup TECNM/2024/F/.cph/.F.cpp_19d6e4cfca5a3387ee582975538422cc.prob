@@ -1,0 +1,1 @@
+{"name":"Local: F","url":"c:\\Users\\ADM\\Desktop\\ICPC\\F\\F.cpp","tests":[{"id":1728667742007,"input":"3\nlosjaveros javadabadu\nlosAccs losTLEs\njavadabadu trycatch\n2\njavadabadu\nlosTLEs","output":"losjaveros trycatch\nlosAccs losTLEs"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\ADM\\Desktop\\ICPC\\F\\F.cpp","group":"local","local":true}
