@@ -12,42 +12,92 @@ using vi = vector<int>;
 #define ROF(i, a, b) for (int i = (int)a - 1; i >= (int)b; --i)
 #define ENDL '\n'
 
-#define LAZY_NEUT 0
-#define VAL_NEUT 0
+using i64 = long long;
+
 struct STree {
-  int n; vector<ll> st, lazy;
-  STree(int n):st(4*n+5,VAL_NEUT),lazy(4*n+5,LAZY_NEUT),n(n){}
-  ll comb(ll x, ll y) { return x + y; }
-  void init(int k, int s, int e, vi& a) {
-    if (s + 1 == e) { st[k] = a[s]; return; }
-    int m = (s+e)/2;
-    init(2*k+1, s, m, a); init(2*k+2, m, e, a);
-    st[k] = comb(st[2*k+1], st[2*k+2]);
+  #define ls (k << 1) + 1
+  #define rs (k << 1) + 2
+  #define lp ls, s, m
+  #define rp rs, m, e
+
+  int n;
+  vector<i64> st, lazy;
+
+  STree(int n) : n(n), st((n << 2) + 5), lazy((n << 2) + 5) {}
+
+  i64 merge(i64 x, i64 y) {
+    return x + y;
   }
-  void push(int k, int s, int e) { 
-    if (lazy[k] == LAZY_NEUT) return;
-    st[k] += lazy[k] * (e - s);
-    if(s+1!=e)lazy[2*k+1]+=lazy[k],lazy[2*k+2]+=lazy[k];
-    lazy[k] = LAZY_NEUT;
+
+  void pull(int k) {
+    st[k] = merge(st[ls], st[rs]);
   }
-  ll query(int k, int s, int e, int a, int b) {
+
+  void apply(int k, int s, int e, i64 v) {
+    st[k] += (e - s) * v;
+    lazy[k] += v;
+  }
+
+  void push(int k, int s, int e) {
+    if (lazy[k]) {
+      int m = (s + e) >> 1;
+      apply(lp, lazy[k]);
+      apply(rp, lazy[k]);
+      lazy[k] = 0;
+    }
+  }
+
+  void build(int k, int s, int e, vector<int>& a) {
+    if (s + 1 == e) {
+      st[k] = a[s];
+      return;
+    }
+    int m = (s + e) >> 1;
+    build(lp, a);
+    build(rp, a);
+    pull(k);
+  }
+
+  i64 query(int k, int s, int e, int a, int b) {
+    if (a <= s && e <= b) {
+      return st[k];
+    }
     push(k, s, e);
-    if (a <= s && e <= b) return st[k];
-    if (e <= a || s >= b) return VAL_NEUT;
-    int m = (s+e)/2;
-    return comb(query(2*k+1,s,m,a,b),query(2*k+2,m,e,a,b));
+    int m = (s + e) >> 1;
+    if (a >= m) {
+      return query(rp, a, b);
+    }
+    if (b <= m) {
+      return query(lp, a, b);
+    }
+    return merge(query(lp, a, b), query(rp, a, b));
   }
+
   void upd(int k, int s, int e, int a, int b, int v) {
+    if (a <= s && e <= b) {
+      apply(k, s, e, v);
+      return;
+    }
     push(k, s, e);
-    if (e <= a || s >= b) return;
-    if (a<=s && e<=b){lazy[k] += v;push(k,s,e);return;}
-    int m = (s+e)/2;
-    upd(2*k+1,s,m,a,b,v); upd(2*k+2,m,e,a,b,v);
-    st[k] = comb(st[2*k+1], st[2*k+2]);
+    int m = (s + e) >> 1;
+    if (a < m) {
+      upd(lp, a, b, v);
+    }
+    if (b > m) {
+      upd(rp, a, b, v);
+    }
+    pull(k);
   }
-  ll query(int a, int b) { return query(0, 0, n, a, b); }
-  void upd(int a, int b, int v) { upd(0, 0, n, a, b, v); }
-  void init(vi& a) { init(0, 0, n, a); }
+
+  i64 query(int a, int b) {
+    return query(0, 0, n, a, b);
+  }
+  void upd(int a, int b, int v) {
+    upd(0, 0, n, a, b, v);
+  }
+  void build(vector<int>& a) {
+    build(0, 0, n, a);
+  }
 };
 
 signed main() {
@@ -57,7 +107,7 @@ signed main() {
   cin >> n >> q;
   vi a(n);
   FOR (i, 0, n) cin >> a[i];
-  STree st(n); st.init(a);
+  STree st(n); st.build(a);
   while (q--) {
     int op;
     cin >> op;

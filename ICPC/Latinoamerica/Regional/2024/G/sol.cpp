@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 // Pura Gente del Coach Moy
-
 signed main() {
   cin.tie(0)->sync_with_stdio(0);
 
@@ -84,7 +83,7 @@ signed main() {
       dp[u] = oldDpu;
       dp[v] = oldDpv;   
       ++curr[dp[u].second];
-      ++curr[dp[v].second];
+      ++curr[dp[v].second]; 
     }
   };
   reroot(reroot, 0, -1);
