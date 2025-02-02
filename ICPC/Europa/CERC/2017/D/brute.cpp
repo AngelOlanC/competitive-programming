@@ -16,11 +16,9 @@ void updLink(int i, int j, vector<vector<int>>& nums, vector<vector<int>>& d) {
 
 void go(int &i, int& j, int k, vector<vector<int>>& d) {
   const int r = (int)d.size(), c = (int)d[0].size();
-  // cout << "empiezo " << i + 1 << ' ' << j + 1 << '\n';
   while (k--) {
     i = (i + d[i][j] + r) % r;
     j = (j + 1) % c;
-    // cout << k << ' ' << i + 1 << ' ' << j + 1 << '\n';
   }
 }
 
@@ -49,7 +47,7 @@ int main() {
 
   int i = 0, j = 0;
   while (m--) {
-  string op;
+    string op;
     cin >> op;
 
     if (op[0] == 'c') {

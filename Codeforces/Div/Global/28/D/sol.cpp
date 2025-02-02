@@ -26,16 +26,16 @@ signed main() {
     sort(b.begin(), b.end());
     
     vector<int> c(m);
-    for (int i = m - 1, j = n; b[i] > p && i >= 0; --i) {
-      while (j && a[j - 1] >= b[i]) {
+    for (int i = m - 1, j = n - 1; b[i] > p && i >= 0; --i) {
+      while (j != -1 && a[j] >= b[i]) {
         --j;
       }
-      c[i] = n - j;
+      c[i] = n - j - 1;
     }
     sort(c.begin(), c.end());
 
     for (int k = 1; k <= m; ++k) {
-      int ans = 0;
+      i64 ans = 0;
       for (int j = k - 1; j < m; j += k) {
         ans += c[j] + 1;
       }
